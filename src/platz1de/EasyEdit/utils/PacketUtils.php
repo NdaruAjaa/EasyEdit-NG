@@ -20,27 +20,17 @@ class PacketUtils
 	 * @param Block  $block
 	 * @param bool   $ignoreData
 	 */
-	public static function sendFakeBlock(Player $player, Block $block, bool $ignoreData = false): void {
-		self::sendFakeBlockAt($player, $block->getPosition(), $block, $ignoreData);
-	}
-
-	/**
-	 * @param Player  $player
-	 * @param Vector3 $pos
-	 * @param Block   $block
-	 * @param bool    $ignoreData
-	 */
-	public static function sendFakeBlockAt(Player $player, Vector3 $pos, Block $block, bool $ignoreData = false): void
+	public static function sendFakeBlock(Player $player, Block $block, bool $ignoreData = false): void
 	{
 		$player->getNetworkSession()->sendDataPacket(UpdateBlockPacket::create(
-			BlockPosition::fromVector3($pos),
+			BlockPosition::fromVector3($block->getPosition()),
 			TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($block->getStateId()),
 			UpdateBlockPacket::FLAG_NETWORK,
 			UpdateBlockPacket::DATA_LAYER_NORMAL
 		));
 
 		if (!$ignoreData && $block instanceof CompoundBlock) {
-			$player->getNetworkSession()->sendDataPacket(BlockActorDataPacket::create(BlockPosition::fromVector3($pos), new CacheableNbt($block->getData())));
+			$player->getNetworkSession()->sendDataPacket(BlockActorDataPacket::create(BlockPosition::fromVector3($block->getPosition()), new CacheableNbt($block->getData())));
 		}
 	}
 
